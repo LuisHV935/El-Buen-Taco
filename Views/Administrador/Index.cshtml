@@ -1,0 +1,60 @@
+﻿@model IEnumerable<El_Buen_Taco.Models.Pedidos>
+
+@{
+    ViewData["Title"] = "Pedidos - Administrador";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4 admin-header">
+        <div>
+            <h2 class="mb-1">📦 Pedidos</h2>
+            <small class="text-muted">Listado de pedidos recientes</small>
+        </div>
+
+        <div class="d-flex gap-3 mt-3 mt-md-0">
+            <div class="stat-card text-center">
+                <div class="stat-value">@((Model?.Count() ?? 0))</div>
+                <div class="stat-label">Total pedidos</div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">No hay pedidos para mostrar.</div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Alimentos</th>
+                        <th>Hora entrega</th>
+                        <th>Método pago</th>
+                        <th>Tipo</th>
+                        <th>Fecha pedido</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="align-middle">@item.Idpedido</td>
+                            <td class="align-middle" style="max-width:420px; white-space:normal;">@item.alimentos</td>
+                            <td class="align-middle">@item.horadeentrega.ToString(@"hh\:mm")</td>
+                            <td class="align-middle">@item.metododePago</td>
+                            <td class="align-middle">@item.tipo</td>
+                            <td class="align-middle">@((item.Fecha_pedido == default) ? "-" : item.Fecha_pedido.ToString("g"))</td>
+                            <td class="text-end align-middle">
+                                <a class="btn btn-sm btn-outline-danger" asp-controller="Administrador" asp-action="DeletePedido" asp-route-id="@item.Idpedido">Eliminar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

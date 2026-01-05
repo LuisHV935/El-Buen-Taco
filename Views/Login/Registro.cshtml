@@ -1,0 +1,91 @@
+﻿@model El_Buen_Taco.Models.Registro
+
+@{
+    ViewData["Title"] = "Registro";
+    ViewData["FullWidth"] = "full-width";
+
+}
+
+<div class="login-bg">
+    <video class="bg-video" autoplay muted loop playsinline preload="metadata" poster="/images/login-poster.jpg" aria-hidden="true">
+        <source src="/VideoTacos.mp4" type="video/mp4" />
+        <source src="/VideoTacos.webm" type="video/webm" />
+        Tu navegador no soporta el elemento
+        <code>video</code>.
+    </video>
+
+    <div class="login-overlay" aria-hidden="true"></div>
+
+    <div class="create-center d-flex align-items-center justify-content-center">
+        <div class="card shadow-sm create-card-container">
+            <div class="card-body p-4">
+                <div class="text-center mb-3">
+                    <h3 class="mb-0">📃Crear Cuenta</h3>
+                    <small class="text-muted">Rellena todos los datos</small>
+                </div>
+
+                @if (ViewData["Mensaje"] != null)
+                {
+                    <div class="alert alert-danger">@ViewData["Mensaje"]</div>
+                }
+
+                <form asp-controller="Login" asp-action="Registro" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="usuario.email" class="form-label">Email</label>
+                        <input asp-for="usuario.email" class="form-control form-control-lg" placeholder="tucorreo@dominio.com" />
+                        <span asp-validation-for="usuario.email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="usuario.password" class="form-label">Contraseña</label>
+                        <input asp-for="usuario.password" type="password" class="form-control form-control-lg" placeholder="Contraseña" />
+                        <span asp-validation-for="usuario.password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="cliente.Name" class="form-label">Nombre</label>
+                        <input asp-for="cliente.Name" type="text" class="form-control form-control-lg" placeholder="Cosme Fulanito" />
+                        <span asp-validation-for="cliente.Name" class="text-danger small"></span>
+                    </div>
+
+                
+                    <div class="mb-3">
+                        <label asp-for="cliente.tel" class="form-label">Telefono</label>
+                        <input asp-for="cliente.tel" type="tel" inputmode="numeric" pattern="[0-9]{10}" class="form-control form-control-lg" placeholder="5567874532" />
+                        <span asp-validation-for="cliente.tel" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="cliente.tipo" class="form-label">Tipo de cliente:</label>
+                        <select asp-for="cliente.tipo" class="form-select">
+                            <option value="FISICA">Persona Fisica</option>
+                            <option value="MORAL">Empresa</option>
+                        </select>
+                        <span asp-validation-for="cliente.Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <a class="small" asp-controller="Login" asp-action="Index" style="color:peachpuff">Ya soy cliente</a>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Crear cuenta</button>
+                    </div>
+                </form>
+                @if (ViewData["Confirmacion"] != null)
+                {
+                    <div class="alert alert-danger">@ViewData["Confirmacion"]</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

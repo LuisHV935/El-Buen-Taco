@@ -1,0 +1,61 @@
+﻿@model El_Buen_Taco.Models.Usuario
+
+@{
+    ViewData["Title"] = "Iniciar sesión";
+    ViewData["FullWidth"] = "full-width";
+
+}
+
+<div class="login-bg">
+    <video class="bg-video" autoplay muted loop playsinline preload="metadata" poster="/images/login-poster.jpg" aria-hidden="true">
+        <source src="/VideoTacos.mp4" type="video/mp4" />
+        <source src="/VideoTacos.webm" type="video/webm" />
+        Tu navegador no soporta el elemento <code>video</code>.
+    </video>
+
+    <div class="login-overlay" aria-hidden="true"></div>
+
+    <div class="login-center d-flex align-items-center justify-content-center">
+        <div class="card shadow-sm login-card-container">
+            <div class="card-body p-4">
+                <div class="text-center mb-3">
+                    <h3 class="mb-0">🌮 El Buen Taco</h3>
+                    <small class="text-muted">Accede a tu cuenta</small>
+                </div>
+
+                @if (ViewData["Mensaje"] != null)
+                {
+                    <div class="alert alert-danger">@ViewData["Mensaje"]</div>
+                }
+
+                <form asp-controller="Login" asp-action="Index" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="email" class="form-label">Email</label>
+                        <input asp-for="email" class="form-control form-control-lg" placeholder="tu@ejemplo.com"/>
+                        <span asp-validation-for="email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="password" class="form-label">Contraseña</label>
+                        <input asp-for="password" type="password" class="form-control form-control-lg" placeholder="Contraseña" />
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <a class="small" asp-controller="Login" asp-action="Registro" style="color:peachpuff">Crear cuenta</a>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

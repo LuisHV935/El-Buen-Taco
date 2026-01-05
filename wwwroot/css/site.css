@@ -1,0 +1,175 @@
+*{
+    margin: 0;
+    padding: 0; 
+}
+body.full-width .container {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 0px;
+}
+
+.imagenDeFondo {
+    background-image: url(../fondoRestaurante.jpg);
+    background-size: cover; /* Cubre toda el área */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* No repetir */
+    background-attachment: fixed; /* Imagen fija al scroll */
+}
+
+button[type=submit] {
+    border: none;
+    outline: none;
+    background-color: peachpuff; 
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.login-bg {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.fondo-bg {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  z-index: 0;
+  display: block;
+}
+
+
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35); 
+  z-index: 1;
+}
+
+
+.login-center {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.create-center {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.login-card-container {
+    font-family: Georgia, serif;
+    color: azure;
+    background-color: rgb(255,255,255,0.027);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 420px;
+}
+
+.create-card-container {
+    font-family: Georgia, serif;
+    color: azure;
+    background-color: rgb(255,255,255,0.027);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 700px;
+}
+
+@media (max-width: 767.98px) {
+  .bg-video {
+    display: none; 
+  }
+  .login-center {
+    padding: 1rem;
+  }
+}
+
+/* Estilos añadidos para administrador */
+.admin-header {
+  gap: 1rem;
+  align-items: center;
+}
+
+.stat-card {
+  background: linear-gradient(90deg, #ffffff, #f8fafc);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  min-width: 110px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #0d6efd;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Ajustes para tablas en admin */
+.table-hover tbody tr:hover {
+  background-color: rgba(13,110,253,0.03);
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+/* Mejor lectura de columnas largas */
+.table td {
+  word-break: break-word;
+}
+
+/* Responsividad: ajuste para pantallas pequeñas */
+@media (max-width: 575.98px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .stat-card { min-width: 90px; padding: .4rem .6rem; }
+}

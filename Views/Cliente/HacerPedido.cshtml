@@ -1,0 +1,68 @@
+﻿@model El_Buen_Taco.Models.Pedidos
+
+@{
+    ViewData["Title"] = "Hacer pedido";
+}
+    
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">📝 Nuevo pedido</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Cliente" asp-action="HacerPedido" method="post" novalidate>
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <input asp-for="Idcliente" type="hidden" value="@(Context.Session.GetInt32("ClienteId") ?? 0)" />
+
+                        <div class="mb-3">
+                            <label asp-for="alimentos" class="form-label">Alimentos</label>
+                            <textarea asp-for="alimentos" class="form-control" rows="4" placeholder="Ej. 2 tacos pastor, 1 agua"></textarea>
+                            <span asp-validation-for="alimentos" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row gx-2">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="horadeentrega" class="form-label">Hora de entrega</label>
+                                <input asp-for="horadeentrega" type="time" class="form-control" />
+                                <span asp-validation-for="horadeentrega" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="metododePago" class="form-label">Método de pago</label>
+                                <select asp-for="metododePago" class="form-select">
+                                    <option value="">Selecciona...</option>
+                                    <option value="EFECTIVO">Efectivo</option>
+                                    <option value="TARJETA">Tarjeta</option>
+                                    <option value="TRANSFERENCIA">Transferencia</option>
+                                </select>
+                                <span asp-validation-for="metododePago" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="tipo" class="form-label">Tipo de pedido</label>
+                            <select asp-for="tipo" class="form-select">
+                                <option value="">Selecciona...</option>
+                                <option value="A DOMICILIO">Domicilio</option>
+                                <option value="EN LOCAL">Recoger</option>
+                            </select>
+                            <span asp-validation-for="tipo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Enviar pedido</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
