@@ -25,6 +25,8 @@ namespace El_Buen_Taco.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(Usuario user)
         {
+            try{
+            user.password = EncriptarContraseña.ComputeSHA256(user.password);
             var Usuario1 = await _context.usuarios.FirstOrDefaultAsync(u => u.password == user.password && u.email == user.email);
             UsuariodeSesion usuariodeSesion = new UsuariodeSesion();
             if (Usuario1 != null){
@@ -48,7 +50,13 @@ namespace El_Buen_Taco.Controllers
                     HttpContext.Session.SetInt32("ClienteId", IdCliente);
                     return RedirectToAction("Index", "Cliente");
             }
-            return View();
+                return View();
+            }
+            catch (Exception ex)
+            {
+                ViewData["Mensaje"] = ex.Message;
+                return View();
+            }
         }
         [HttpGet]
         public async Task<IActionResult> Registro()
@@ -69,6 +77,7 @@ namespace El_Buen_Taco.Controllers
                 else
                 {
                     user.usuario.rol = "CLIENTE";
+                    user.usuario.password = EncriptarContraseña.ComputeSHA256(user.usuario.password);
                     _context.usuarios.Add(user.usuario);
                     _context.SaveChanges();
                     user.cliente.id_user = user.usuario.id;

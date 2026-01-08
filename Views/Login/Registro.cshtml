@@ -23,6 +23,10 @@
                     <h3 class="mb-0">📃Crear Cuenta</h3>
                     <small class="text-muted">Rellena todos los datos</small>
                 </div>
+                @if (ViewData["Confirmacion"] != null)
+                {
+                    <div class="alert alert-success">@ViewData["Confirmacion"]</div>
+                }
 
                 @if (ViewData["Mensaje"] != null)
                 {
@@ -75,10 +79,6 @@
                         <button type="submit" class="btn btn-primary btn-lg">Crear cuenta</button>
                     </div>
                 </form>
-                @if (ViewData["Confirmacion"] != null)
-                {
-                    <div class="alert alert-danger">@ViewData["Confirmacion"]</div>
-                }
             </div>
         </div>
     </div>

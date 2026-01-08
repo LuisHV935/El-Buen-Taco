@@ -1,0 +1,93 @@
+﻿@model El_Buen_Taco.Models.Pedidos
+
+@{
+    ViewData["Title"] = "Detalle del pedido";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="mb-1">Pedido #@Model.Idpedido</h2>
+            <small class="text-muted">Fecha: @(Model.Fecha_pedido == default ? "-" : Model.Fecha_pedido.ToString("g"))</small>
+        </div>
+        <a class="btn btn-outline-secondary" asp-controller="Cliente" asp-action="Index">↩ Volver a mis pedidos</a>
+        <a class="btn btn-outline-secondary" asp-controller="Cliente" asp-action="EditarPedido" asp-route-id="@Model.Idpedido">Editar Pedido</a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Resumen principal -->
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Resumen del pedido</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Alimentos</label>
+                        <div class="p-3 border rounded bg-white" style="white-space:pre-wrap;">@Model.alimentos</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6 mb-2">
+                            <label class="form-label fw-bold">Hora de entrega</label>
+                            <div>@Model.horadeentrega.ToString(@"hh\:mm")</div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <label class="form-label fw-bold">Método de pago</label>
+                            <div><span class="badge bg-primary">@Model.metododePago</span></div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <label class="form-label fw-bold">Tipo</label>
+                            <div><span class="badge bg-info text-dark">@Model.tipo</span></div>
+                        </div>
+                    </div>
+
+                    <hr />
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel lateral con acciones -->
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Información rápida</h6>
+
+                    <dl class="row mb-0">
+                        <dt class="col-5 text-muted">Pedido</dt>
+                        <dd class="col-7">#@Model.Idpedido</dd>
+
+                        <dt class="col-5 text-muted">Cliente (id)</dt>
+                        <dd class="col-7">@Model.Idcliente</dd>
+
+                        <dt class="col-5 text-muted">Método pago</dt>
+                        <dd class="col-7">@Model.metododePago</dd>
+
+                        <dt class="col-5 text-muted">Fecha</dt>
+                        <dd class="col-7">@((Model.Fecha_pedido == default) ? "-" : Model.Fecha_pedido.ToString("d"))</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Acciones</h6>
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary" asp-controller="Cliente" asp-action="HacerPedido">Pedir otra vez</a>
+
+                        <form asp-controller="Cliente" asp-action="DeletePedido" asp-route-id="@Model.Idpedido" method="post" onsubmit="return confirm('¿Cancelar este pedido?')">
+                            <button type="submit" class="btn btn-outline-danger">Cancelar pedido</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-3 text-muted small">
+                <div>¿Necesitas ayuda?</div>
+                <div>Horario: 13:30 - 18:00</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

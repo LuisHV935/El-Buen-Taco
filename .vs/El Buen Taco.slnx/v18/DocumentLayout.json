@@ -3,28 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\data\\postgresconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:data\\postgresconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\controllers\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:controllers\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\models\\cajero.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:models\\cajero.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\views\\administrador\\clientes.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:views\\administrador\\clientes.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\views\\cliente\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:views\\cliente\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\views\\administrador\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:views\\administrador\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\controllers\\administrador.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:controllers\\administrador.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\views\\cliente\\detallespedido.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:views\\cliente\\detallespedido.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\views\\administrador\\clientes.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:views\\administrador\\clientes.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -39,75 +35,68 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "PostgresConexion.cs",
-              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Data\\PostgresConexion.cs",
-              "RelativeDocumentMoniker": "Data\\PostgresConexion.cs",
-              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Data\\PostgresConexion.cs",
-              "RelativeToolTip": "Data\\PostgresConexion.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAAAAcAAAAJAAAAAAAAAA==",
+              "Title": "Cliente.cs",
+              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Controllers\\Cliente.cs",
+              "RelativeDocumentMoniker": "Controllers\\Cliente.cs",
+              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Controllers\\Cliente.cs",
+              "RelativeToolTip": "Controllers\\Cliente.cs",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAowEkAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-05T23:32:41.913Z",
+              "WhenOpened": "2026-01-08T07:54:00.434Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Cajero.cs",
-              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Models\\Cajero.cs",
-              "RelativeDocumentMoniker": "Models\\Cajero.cs",
-              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Models\\Cajero.cs",
-              "RelativeToolTip": "Models\\Cajero.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-05T23:32:23.761Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Clientes.cshtml",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Administrador\\Clientes.cshtml",
               "RelativeDocumentMoniker": "Views\\Administrador\\Clientes.cshtml",
               "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Administrador\\Clientes.cshtml",
               "RelativeToolTip": "Views\\Administrador\\Clientes.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-05T21:51:33.291Z"
+              "WhenOpened": "2026-01-08T08:36:20.032Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Administrador\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Administrador\\Index.cshtml",
               "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Administrador\\Index.cshtml",
               "RelativeToolTip": "Views\\Administrador\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-05T21:48:22.709Z"
+              "WhenOpened": "2026-01-08T08:35:41.628Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "site.css",
-              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\wwwroot\\css\\site.css",
-              "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
-              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\wwwroot\\css\\site.css",
-              "RelativeToolTip": "wwwroot\\css\\site.css",
-              "ViewState": "AgIAAHgAAAAAAAAAAIAwwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-01-05T21:48:05.42Z"
+              "DocumentIndex": 3,
+              "Title": "DetallesPedido.cshtml",
+              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Cliente\\DetallesPedido.cshtml",
+              "RelativeDocumentMoniker": "Views\\Cliente\\DetallesPedido.cshtml",
+              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Cliente\\DetallesPedido.cshtml",
+              "RelativeToolTip": "Views\\Cliente\\DetallesPedido.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-08T08:32:24.292Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Administrador.cs",
-              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Controllers\\Administrador.cs",
-              "RelativeDocumentMoniker": "Controllers\\Administrador.cs",
-              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Controllers\\Administrador.cs",
-              "RelativeToolTip": "Controllers\\Administrador.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAewCQAAAAeAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-26T01:43:48.751Z"
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Cliente\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Cliente\\Index.cshtml",
+              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Cliente\\Index.cshtml",
+              "RelativeToolTip": "Views\\Cliente\\Index.cshtml",
+              "ViewState": "AgIAACEAAAAAAAAAAAAcwDQAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-08T07:54:06.85Z",
+              "EditorCaption": ""
             }
           ]
         }

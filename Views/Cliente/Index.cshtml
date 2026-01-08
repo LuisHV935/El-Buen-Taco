@@ -7,6 +7,7 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">📋 Mis pedidos</h2>
+        <h3 class="mb-0">Bienvenido </h3>
         <a class="btn btn-outline-primary" asp-controller="Cliente" asp-action="HacerPedido">Nuevo pedido</a>
     </div>
 
@@ -38,7 +39,11 @@
                             <td>@(item.horadeentrega.ToString(@"hh\:mm"))</td>
                             <td>@item.metododePago</td>
                             <td>@item.tipo</td>
-                            <td>@(item.Fecha_pedido == default ? "-" : item.Fecha_pedido.ToString("g"))</td>
+                            <td>@(item.Fecha_pedido == default ? "-" : item.Fecha_pedido.Date.ToString("g"))</td>
+                            <td class="text-end align-middle">
+                                <a class="btn btn-sm btn-outline-danger" asp-controller="Cliente" asp-action="DeletePedido" asp-route-id="@item.Idpedido">Eliminar</a>
+                                <a class="btn btn-sm btn-primary" asp-controller="Cliente" asp-action="DetallesPedido" asp-route-id="@item.Idpedido">Detalles</a>
+                            </td>
                         </tr>
                     }
                 </tbody>

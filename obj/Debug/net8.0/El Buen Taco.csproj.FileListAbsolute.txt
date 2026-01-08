@@ -136,3 +136,4 @@ C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\refint\El 
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\El Buen Taco.pdb
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\El Buen Taco.genruntimeconfig.cache
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\ref\El Buen Taco.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\El Buen Taco.sourcelink.json

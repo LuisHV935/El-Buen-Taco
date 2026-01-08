@@ -1,31 +1,33 @@
 ﻿@model El_Buen_Taco.Models.Pedidos
 
 @{
-    ViewData["Title"] = "Hacer pedido";
+    ViewData["Title"] = "Editar pedido";
 }
 
-    
 <div class="container py-4">
     @if (ViewData["Confirmacion"] != null)
     {
         <div class="alert alert-success">@ViewData["Confirmacion"]</div>
     }
     <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
+        <div class="col-12 col-md-9 col-lg-7">
             <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0">📝 Nuevo pedido</h5>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">✏️ Editar pedido #@Model.Idpedido</h5>
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Cliente" asp-action="DetallesPedido" asp-route-id="@Model.Idpedido">Cancelar</a>
                 </div>
+
                 <div class="card-body">
-                    <form asp-controller="Cliente" asp-action="HacerPedido" method="post" novalidate>
+                    <form asp-controller="Cliente" asp-action="EditarPedido" method="post" novalidate>
                         @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <input asp-for="Idcliente" type="hidden" value="@(Context.Session.GetInt32("ClienteId") ?? 0)" />
+                        <input asp-for="Idpedido" type="hidden" />
+                        <input asp-for="Idcliente" type="hidden" />
 
                         <div class="mb-3">
                             <label asp-for="alimentos" class="form-label">Alimentos</label>
-                            <textarea asp-for="alimentos" class="form-control" rows="4" placeholder="Ej. 2 tacos pastor, 1 agua"></textarea>
+                            <textarea asp-for="alimentos" class="form-control" rows="5" placeholder="Lista de alimentos, cantidades y observaciones">@Model.alimentos</textarea>
                             <span asp-validation-for="alimentos" class="text-danger small"></span>
                         </div>
 
@@ -40,9 +42,9 @@
                                 <label asp-for="metododePago" class="form-label">Método de pago</label>
                                 <select asp-for="metododePago" class="form-select">
                                     <option value="">Selecciona...</option>
-                                    <option value="EFECTIVO">Efectivo</option>
-                                    <option value="TARJETA">Tarjeta</option>
-                                    <option value="TRANSFERENCIA">Transferencia</option>
+                                    <option value="EFECTIVO" selected="@(Model.metododePago == "EFECTIVO")">Efectivo</option>
+                                    <option value="TARJETA" selected="@(Model.metododePago == "TARJETA")">Tarjeta</option>
+                                    <option value="TRANSFERENCIA" selected="@(Model.metododePago == "TRANSFERENCIA")">Transferencia</option>
                                 </select>
                                 <span asp-validation-for="metododePago" class="text-danger small"></span>
                             </div>
@@ -52,14 +54,15 @@
                             <label asp-for="tipo" class="form-label">Tipo de pedido</label>
                             <select asp-for="tipo" class="form-select">
                                 <option value="">Selecciona...</option>
-                                <option value="A DOMICILIO">Domicilio</option>
-                                <option value="EN LOCAL">Recoger</option>
+                                <option value="A DOMICILIO" selected="@(Model.tipo == "A DOMICILIO")">Domicilio</option>
+                                <option value="EN LOCAL" selected="@(Model.tipo == "EN LOCAL")">Recoger</option>
                             </select>
                             <span asp-validation-for="tipo" class="text-danger small"></span>
                         </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">Enviar pedido</button>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a class="btn btn-outline-secondary" asp-controller="Cliente" asp-action="DetallesPedido" asp-route-id="@Model.Idpedido">Volver</a>
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
                         </div>
                     </form>
                 </div>

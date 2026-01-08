@@ -1,0 +1,83 @@
+﻿@model El_Buen_Taco.Models.Pedidos
+
+@{
+    ViewData["Title"] = "Detalle del pedido";
+    // Opcionales: el controlador puede rellenar estos ViewData
+    var clienteNombre = ViewData["ClienteName"] as string;
+    var clienteTel = ViewData["ClientePhone"] as string;
+    var clienteId = ViewData["ClienteId"] as int?;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="mb-1">Pedido #@Model.Idpedido</h2>
+            <small class="text-muted">Creado: @(Model.Fecha_pedido == default ? "-" : Model.Fecha_pedido.ToString("g"))</small>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" asp-controller="Administrador" asp-action="Index">Volver</a>
+            <form asp-controller="Administrador" asp-action="DeletePedido" asp-route-id="@Model.Idpedido" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este pedido? Esta acción no se puede deshacer.');">
+                <button type="submit" class="btn btn-outline-danger">Eliminar</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Columna izquierda: resumen del pedido -->
+        <div class="col-12 col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Resumen</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Alimentos</label>
+                        <div class="p-3 border rounded" style="white-space:pre-wrap;">@Model.alimentos</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6 mb-2">
+                            <label class="form-label fw-bold">Hora entrega</label>
+                            <div>@Model.horadeentrega.ToString(@"hh\:mm")</div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <label class="form-label fw-bold">Método de pago</label>
+                            <div><span class="badge bg-primary">@Model.metododePago</span></div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <label class="form-label fw-bold">Tipo</label>
+                            <div><span class="badge bg-info text-dark">@Model.tipo</span></div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <label class="form-label fw-bold">Fecha pedido</label>
+                            <div>@(Model.Fecha_pedido == default ? "-" : Model.Fecha_pedido.ToString("f"))</div>
+                        </div>
+                    </div>
+
+                    <hr />
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: información cliente y acciones rápidas -->
+        <div class="col-12 col-lg-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-2">Cliente</h5>
+                    @if (!string.IsNullOrEmpty(clienteNombre))
+                    {
+                        <p class="mb-1"><strong>@clienteNombre</strong></p>
+                        <p class="mb-1">Tel: <a href="tel:@clienteTel">@clienteTel</a></p>
+                    }
+                    else
+                    {
+                        <div class="text-muted">Información del cliente no disponible.</div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
