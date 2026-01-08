@@ -1,49 +1,60 @@
-using El_Buen_Taco.Data;
+﻿using El_Buen_Taco.Data;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-// En Program.cs, configura las cookies como temporales
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.IsEssential = true;
-    // Las cookies expirar�n cuando cierre el navegador
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-    options.SlidingExpiration = true;
-});
-// Add services to the container.
+
+// 1. Data Protection para Render (ESENCIAL)
+var keysPath = Path.Combine(Path.GetTempPath(), "aspnet-keys");
+Directory.CreateDirectory(keysPath);
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
+    .SetApplicationName("El Buen Taco");
+
+// 2. Servicios
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<PostgresConexion>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// 3. Base de datos
+builder.Services.AddDbContext<PostgresConexion>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// 4. Sesión CONFIGURADA CORRECTAMENTE
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.Name = "ElBuenTaco";
-
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS en Render
+    options.Cookie.SameSite = SameSiteMode.Lax;
 });
+
+// 5. HttpContext
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddControllersWithViews(); 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 6. Pipeline - ORDEN CORRECTO
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// ORDEN CRÍTICO:
+app.UseSession(); // ← PRIMERO
 app.UseRouting();
-
+app.UseAuthentication(); // ← NO OLVIDES ESTA
 app.UseAuthorization();
-app.UseSession();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");
 
-app.Run();
+// 7. Puerto para Render
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Run($"http://0.0.0.0:{port}");
