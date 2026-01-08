@@ -2,7 +2,14 @@ using El_Buen_Taco.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
+// En Program.cs, configura las cookies como temporales
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.IsEssential = true;
+    // Las cookies expirarán cuando cierre el navegador
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    options.SlidingExpiration = true;
+});
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
