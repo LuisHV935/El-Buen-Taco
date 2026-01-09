@@ -1,7 +1,6 @@
-wwwroot\css\site.css
-wwwroot\favicon.ico
-wwwroot\fondoRestaurante.jpg
 wwwroot\js\site.js
+wwwroot\favicon.ico
+wwwroot\css\site.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
@@ -60,3 +59,4 @@ wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
 wwwroot\VideoTacos.mp4
+wwwroot\fondoRestaurante.jpg

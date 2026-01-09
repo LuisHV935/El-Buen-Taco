@@ -22,7 +22,6 @@ namespace El_Buen_Taco.Controllers
             var pedidos = await _context.pedidos.Where(p => p.Idcliente == id).ToListAsync();
             pedidos.ForEach(p => p.Fecha_pedido = p.Fecha_pedido.Date);
             var cliente = await _context.clientes.FindAsync(id);    
-            ViewData["NombreCliente"] = cliente.Name;
             return View(pedidos);  
         }
         [BlockDirectAccess]
@@ -52,7 +51,7 @@ namespace El_Buen_Taco.Controllers
         {
             _context.pedidos.Remove(_context.pedidos.Find(id));
             _context.SaveChanges();
-            return View("Index");
+            return RedirectToAction("Index");
         }
 
         [BlockDirectAccess]
@@ -75,8 +74,8 @@ namespace El_Buen_Taco.Controllers
         {
             _context.pedidos.Update(pedido);
             _context.SaveChanges();
-            ViewData["Confirmacion"] = "Pedido actualizado con exito!!!";   
-            return View();
+            ViewData["Confirmacion"] = "Pedido actualizado con exito!!!";
+            return View(pedido);
         }
         
     }

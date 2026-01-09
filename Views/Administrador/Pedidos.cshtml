@@ -49,7 +49,7 @@
                             <td class="align-middle">@item.tipo</td>
                             <td class="align-middle">@((item.Fecha_pedido == default) ? "-" : item.Fecha_pedido.Date.ToString("g"))</td>
                             <td class="text-end align-middle">
-                                <a class="btn btn-sm btn-outline-danger" asp-controller="Administrador" asp-action="DeletePedido" asp-route-id="@item.Idpedido">Eliminar</a>
+                                <a class="btn btn-sm btn-outline-danger" asp-controller="Administrador" asp-action="DeletePedido" asp-route-id="@item.Idpedido" asp-route-fromAction="Pedidos">Eliminar</a>
                                 <a class="btn btn-sm btn-primary" asp-controller="Administrador" asp-action="DetallesPedido" asp-route-id="@item.Idpedido">Detalles</a>
 
                             </td>
