@@ -1,29 +1,49 @@
 ﻿using System.IO;
+using System.Xml.Linq;
 using El_Buen_Taco.Data;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Logging extra para DataProtection (temporal, útil para diagnóstico)
+builder.Logging.AddConsole();
+builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection", LogLevel.Debug);
+builder.Logging.AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Debug);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// DbContext
+// DbContext principal (ya existía)
 builder.Services.AddDbContext<PostgresConexion>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Persistir claves de DataProtection (ruta configurable via env var DATA_PROTECTION_PATH o config)
-var dataProtectionPath = builder.Configuration["DataProtection:KeyPath"]
-                         ?? Environment.GetEnvironmentVariable("DATA_PROTECTION_PATH")
-                         ?? Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys");
+// DbContext para almacenar las claves de DataProtection en la misma BD
+builder.Services.AddDbContext<DataProtectionKeysContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-Directory.CreateDirectory(dataProtectionPath);
+    // Registrar la implementación EF concreta como scoped
+builder.Services.AddScoped<El_Buen_Taco.Data.EfCoreXmlRepository>();
 
+// Registrar el wrapper singleton que crea scope por operación
+builder.Services.AddSingleton<Microsoft.AspNetCore.DataProtection.Repositories.IXmlRepository, El_Buen_Taco.Data.ScopedXmlRepositoryWrapper>();
+
+// Configurar KeyManagementOptions para usar el IXmlRepository inyectado (ahora seguro como singleton)
+builder.Services.AddSingleton<Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.DataProtection.KeyManagement.KeyManagementOptions>>(sp =>
+    new Microsoft.Extensions.Options.ConfigureOptions<Microsoft.AspNetCore.DataProtection.KeyManagement.KeyManagementOptions>(opts =>
+    {
+        opts.XmlRepository = sp.GetRequiredService<Microsoft.AspNetCore.DataProtection.Repositories.IXmlRepository>();
+    }));
+
+// Configurar DataProtection usando el repository (ApplicationName fijo)
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionPath))
-    .SetApplicationName("El_Buen_Taco"); // mismo nombre para todas las réplicas
+    .SetApplicationName("El_Buen_Taco");
 
 // Session
 builder.Services.AddSession(options =>
@@ -56,6 +76,13 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
+// Asegurar que la tabla de claves existe (si no quieres migraciones ahora)
+using (var scope = app.Services.CreateScope())
+{
+    var keyDb = scope.ServiceProvider.GetRequiredService<DataProtectionKeysContext>();
+    keyDb.Database.EnsureCreated();
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -69,7 +96,6 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // Session debe estar disponible antes de MapControllers/MapControllerRoute.
-// Registramos la sesión antes de la autenticación para que esté disponible si se usa en middlewares posteriores.
 app.UseSession();
 
 // Autenticación y autorización

@@ -129,7 +129,6 @@ C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\staticweba
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\El Buen .8AB6340F.Up2Date
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\El Buen Taco.dll
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\refint\El Buen Taco.dll
@@ -137,3 +136,18 @@ C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\El Buen Ta
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\El Buen Taco.genruntimeconfig.cache
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\ref\El Buen Taco.dll
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\El Buen Taco.sourcelink.json
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Microsoft.AspNetCore.DataProtection.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Microsoft.AspNetCore.DataProtection.Abstractions.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Microsoft.AspNetCore.DataProtection.StackExchangeRedis.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Microsoft.Bcl.Cryptography.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Microsoft.Extensions.FileProviders.Abstractions.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\StackExchange.Redis.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\System.Formats.Asn1.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\System.IO.Hashing.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\System.Security.Cryptography.Xml.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
