@@ -28,7 +28,7 @@ builder.Services.AddDbContext<PostgresConexion>(options =>
 builder.Services.AddDbContext<DataProtectionKeysContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-    // Registrar la implementación EF concreta como scoped
+// Registrar la implementación EF concreta como scoped
 builder.Services.AddScoped<El_Buen_Taco.Data.EfCoreXmlRepository>();
 
 // Registrar el wrapper singleton que crea scope por operación
@@ -45,16 +45,24 @@ builder.Services.AddSingleton<Microsoft.Extensions.Options.IConfigureOptions<Mic
 builder.Services.AddDataProtection()
     .SetApplicationName("El_Buen_Taco");
 
-// Session
+// Session - CONFIGURACIÓN SEGURA PARA PRODUCCIÓN
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.Name = "ElBuenTaco";
+
+    // Cookies seguras: SameAsRequest en desarrollo, Always en producción
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
+
+    // Protección CSRF
+    options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
-// Authentication (Cookies)
+// Authentication (Cookies) - CONFIGURACIÓN SEGURA PARA PRODUCCIÓN
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -67,9 +75,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
         options.Cookie.Name = "ElBuenTacoAuth";
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        // En producción activa Always y asegura HTTPS
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+
+        // Protección CSRF mejorada (Strict en lugar de Lax)
+        options.Cookie.SameSite = SameSiteMode.Strict;
+
+        // Cookies seguras: SameAsRequest en desarrollo, Always en producción
+        options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+            ? CookieSecurePolicy.SameAsRequest
+            : CookieSecurePolicy.Always;
     });
 
 builder.Services.AddHttpContextAccessor();
