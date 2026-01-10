@@ -1,4 +1,5 @@
-﻿using El_Buen_Taco.Data;
+﻿using System.IO;
+using El_Buen_Taco.Data;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,6 +13,17 @@ builder.Services.AddControllersWithViews();
 // DbContext
 builder.Services.AddDbContext<PostgresConexion>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Persistir claves de DataProtection (ruta configurable via env var DATA_PROTECTION_PATH o config)
+var dataProtectionPath = builder.Configuration["DataProtection:KeyPath"]
+                         ?? Environment.GetEnvironmentVariable("DATA_PROTECTION_PATH")
+                         ?? Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys");
+
+Directory.CreateDirectory(dataProtectionPath);
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionPath))
+    .SetApplicationName("El_Buen_Taco"); // mismo nombre para todas las réplicas
 
 // Session
 builder.Services.AddSession(options =>
