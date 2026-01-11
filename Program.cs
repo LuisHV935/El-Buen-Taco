@@ -9,60 +9,67 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Logging extra para DataProtection (temporal, útil para diagnóstico)
+// Configurar puerto dinámico de Railway
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+// Logging
 builder.Logging.AddConsole();
-builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection", LogLevel.Debug);
-builder.Logging.AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Debug);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// DbContext principal (ya existía)
+// DbContext principal
 builder.Services.AddDbContext<PostgresConexion>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// DbContext para almacenar las claves de DataProtection en la misma BD
+// DbContext para almacenar las claves de DataProtection
 builder.Services.AddDbContext<DataProtectionKeysContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registrar la implementación EF concreta como scoped
 builder.Services.AddScoped<El_Buen_Taco.Data.EfCoreXmlRepository>();
 
-// Registrar el wrapper singleton que crea scope por operación
+// Registrar el wrapper singleton
 builder.Services.AddSingleton<Microsoft.AspNetCore.DataProtection.Repositories.IXmlRepository, El_Buen_Taco.Data.ScopedXmlRepositoryWrapper>();
 
-// Configurar KeyManagementOptions para usar el IXmlRepository inyectado (ahora seguro como singleton)
+// Configurar KeyManagementOptions
 builder.Services.AddSingleton<Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.DataProtection.KeyManagement.KeyManagementOptions>>(sp =>
     new Microsoft.Extensions.Options.ConfigureOptions<Microsoft.AspNetCore.DataProtection.KeyManagement.KeyManagementOptions>(opts =>
     {
         opts.XmlRepository = sp.GetRequiredService<Microsoft.AspNetCore.DataProtection.Repositories.IXmlRepository>();
     }));
 
-// Configurar DataProtection usando el repository (ApplicationName fijo)
+// Configurar DataProtection
 builder.Services.AddDataProtection()
-    .SetApplicationName("El_Buen_Taco");
+    .SetApplicationName("El_Buen_Taco")
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys")); // Persistir claves en Railway
 
-// Session - CONFIGURACIÓN SEGURA PARA PRODUCCIÓN
+// Configurar Forwarded Headers para Railway (IMPORTANTE)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+// Session - CONFIGURACIÓN PARA RAILWAY
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.Name = "ElBuenTaco";
-
-    // Cookies seguras: SameAsRequest en desarrollo, Always en producción
-    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
-        ? CookieSecurePolicy.SameAsRequest
-        : CookieSecurePolicy.Always;
-
-    // Protección CSRF
-    options.Cookie.SameSite = SameSiteMode.Strict;
+    // Railway maneja HTTPS externamente, internamente es HTTP
+    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+    options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
-// Authentication (Cookies) - CONFIGURACIÓN SEGURA PARA PRODUCCIÓN
+// Authentication - CONFIGURACIÓN PARA RAILWAY
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -75,43 +82,51 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
         options.Cookie.Name = "ElBuenTacoAuth";
-
-        // Protección CSRF mejorada (Strict en lugar de Lax)
-        options.Cookie.SameSite = SameSiteMode.Strict;
-
-        // Cookies seguras: SameAsRequest en desarrollo, Always en producción
-        options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
-            ? CookieSecurePolicy.SameAsRequest
-            : CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        // Railway maneja HTTPS externamente
+        options.Cookie.SecurePolicy = CookieSecurePolicy.None;
     });
 
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Asegurar que la tabla de claves existe (si no quieres migraciones ahora)
+// Crear directorio para claves si no existe
+var keysPath = "/app/keys";
+if (!Directory.Exists(keysPath))
+{
+    Directory.CreateDirectory(keysPath);
+}
+
+// Asegurar que la tabla de claves existe
 using (var scope = app.Services.CreateScope())
 {
-    var keyDb = scope.ServiceProvider.GetRequiredService<DataProtectionKeysContext>();
-    keyDb.Database.EnsureCreated();
+    try
+    {
+        var keyDb = scope.ServiceProvider.GetRequiredService<DataProtectionKeysContext>();
+        keyDb.Database.EnsureCreated();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning($"No se pudo crear tabla de claves: {ex.Message}");
+    }
 }
+
+// IMPORTANTE: UseForwardedHeaders debe ir ANTES de otros middlewares
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
-// Session debe estar disponible antes de MapControllers/MapControllerRoute.
+// Session debe estar antes de Authentication
 app.UseSession();
-
-// Autenticación y autorización
 app.UseAuthentication();
 app.UseAuthorization();
 
