@@ -29,7 +29,6 @@
                 }
 
                 <form asp-controller="Login" asp-action="Index" method="post" novalidate>
-                    @Html.AntiForgeryToken()
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
                     <div class="mb-3">

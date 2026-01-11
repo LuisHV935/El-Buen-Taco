@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ElBuenTaco")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c0cf4799fc48de748531af04f13dc49f385dee31")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+88e91827e92b5939ac31a42395847c51df261e0a")]
 [assembly: System.Reflection.AssemblyProductAttribute("ElBuenTaco")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ElBuenTaco")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
