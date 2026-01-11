@@ -21,8 +21,8 @@ namespace El_Buen_Taco.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // Reemplaza el borrado de sesión por SignOut (elimina cookie de autenticación)
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // *** CAMBIO 1: NO hacer SignOutAsync aquí ***
+            // Solo retornar la vista
             return View();
         }
 
@@ -33,19 +33,21 @@ namespace El_Buen_Taco.Controllers
             {
                 user.password = EncriptarContraseña.ComputeSHA256(user.password);
                 var Usuario1 = await _context.usuarios.FirstOrDefaultAsync(u => u.password == user.password && u.email == user.email);
+
                 if (Usuario1 == null)
                 {
                     ViewData["Mensaje"] = "❌Credenciales Invalidas";
                     return View();
                 }
 
-                // Construir claims para el usuario autenticado
+                // *** CAMBIO 2: Añadir claim de tiempo para evitar problemas ***
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, Usuario1.id.ToString()),
                     new Claim(ClaimTypes.Email, Usuario1.email ?? string.Empty),
                     new Claim(ClaimTypes.Name, Usuario1.email ?? string.Empty),
-                    new Claim(ClaimTypes.Role, Usuario1.rol ?? string.Empty)
+                    new Claim(ClaimTypes.Role, Usuario1.rol ?? string.Empty),
+                    new Claim("LoginTime", DateTime.UtcNow.Ticks.ToString()) // Añadir timestamp
                 };
 
                 // Si es cliente, obtener el IdCliente y añadirlo como claim
@@ -62,8 +64,25 @@ namespace El_Buen_Taco.Controllers
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
 
+                // Configurar propiedades de la cookie
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(6),
+                    AllowRefresh = true,
+                    IssuedUtc = DateTimeOffset.UtcNow
+                };
+
                 // Iniciar sesión con cookie de autenticación
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    principal,
+                    authProperties);
+
+                // Guardar también en sesión por si acaso
+                HttpContext.Session.SetString("UserId", Usuario1.id.ToString());
+                HttpContext.Session.SetString("UserEmail", Usuario1.email ?? "");
+                HttpContext.Session.SetString("UserRole", Usuario1.rol ?? "");
 
                 // Redirección según rol
                 switch (Usuario1.rol)
@@ -78,7 +97,7 @@ namespace El_Buen_Taco.Controllers
             }
             catch (Exception ex)
             {
-                ViewData["Mensaje"] = ex.Message;
+                ViewData["Mensaje"] = "Error: " + ex.Message;
                 return View();
             }
         }
@@ -117,9 +136,18 @@ namespace El_Buen_Taco.Controllers
             }
             catch (Exception ex)
             {
-                ViewData["Mensaje"] = ex.Message;
+                ViewData["Mensaje"] = "Error: " + ex.Message;
                 return View();
             }
+        }
+
+        // *** AÑADE ESTE MÉTODO PARA LOGOUT ***
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
         }
     }
 }
