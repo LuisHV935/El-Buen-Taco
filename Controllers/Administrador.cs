@@ -55,8 +55,12 @@ namespace El_Buen_Taco.Controllers
         [BlockDirectAccess]
         public IActionResult DeletePedido(int id, string action)
         {
-            _context.pedidos.Remove(_context.pedidos.Find(id));
-            _context.SaveChanges();
+            var pedidoAEliminar = _context.pedidos.Find(id);
+            if(pedidoAEliminar != null)
+            {
+                _context.pedidos.Remove(pedidoAEliminar);
+                _context.SaveChanges();
+            }
             return RedirectToAction(action);
         }
 

@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiamos sólo el csproj primero para aprovechar cache de Docker
+# Copiamos sï¿½lo el csproj primero para aprovechar cache de Docker
 COPY ["El Buen Taco.csproj", "./"]
 RUN dotnet restore "El Buen Taco.csproj"
 
@@ -9,12 +9,12 @@ RUN dotnet restore "El Buen Taco.csproj"
 COPY . .
 RUN dotnet publish "El Buen Taco.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
 # Exponer un puerto informativo (no obligatorio)
 EXPOSE 80
 
-# Al arrancar, asignamos ASPNETCORE_URLS usando $PORT (si no está, usa 80)
+# Al arrancar, asignamos ASPNETCORE_URLS usando $PORT (si no estï¿½, usa 80)
 ENTRYPOINT ["sh", "-c", "export ASPNETCORE_URLS=http://*:${PORT:-80} && exec dotnet \"El Buen Taco.dll\""]
