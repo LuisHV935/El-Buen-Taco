@@ -1,12 +1,15 @@
 ﻿using El_Buen_Taco.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Logging detallado para debug
+// Configurar logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
@@ -18,45 +21,53 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<PostgresConexion>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// DATA PROTECTION SIMPLIFICADA - SIN DPAPI (Linux compatible)
+// *** DATA PROTECTION CRÍTICO PARA RAILWAY ***
+var keysDirectory = "/app/data-protection-keys";
 builder.Services.AddDataProtection()
     .SetApplicationName("El_Buen_Taco")
-    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
-    .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
-// ¡NO usar ProtectKeysWithDpapi() en Linux/Railway!
+    .PersistKeysToFileSystem(new DirectoryInfo(keysDirectory))
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(90))
+    .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration
+    {
+        EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+    });
 
-// Configurar Forwarded Headers para Railway
+// Configurar Antiforgery para usar Data Protection
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = "ElBuenTaco.Antiforgery";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.HeaderName = "X-CSRF-TOKEN";
+});
+
+// Configurar Forwarded Headers
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.ForwardedHeaders =
-        ForwardedHeaders.XForwardedFor |
-        ForwardedHeaders.XForwardedProto |
-        ForwardedHeaders.XForwardedHost;
-    options.ForwardLimit = 2;
+    options.ForwardedHeaders = ForwardedHeaders.All;
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
 
-// Session - Configuración para Railway (Linux)
+// Session
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.Name = "ElBuenTaco.Session";
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.Name = "ElBuenTaco.Session";
     options.Cookie.SameSite = SameSiteMode.Lax;
-    // Railway maneja HTTPS externamente
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.MaxAge = TimeSpan.FromDays(14);
 });
 
-// Authentication - SOLO configuración básica
+// Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login/Index";  // Solo esta ruta existe
-        // AccessDeniedPath es opcional, si no tienes página de acceso denegado, omítelo
-        // options.AccessDeniedPath = "/Login/Index"; // Solo si tienes esa página
+        options.LoginPath = "/Login/Index";
         options.ExpireTimeSpan = TimeSpan.FromDays(14);
         options.SlidingExpiration = true;
 
@@ -72,59 +83,69 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Crear directorio para claves si no existe
-var keysPath = "/app/keys";
-if (!Directory.Exists(keysPath))
+// *** CREAR DIRECTORIO DE CLAVES CON PERMISOS ***
+if (!Directory.Exists(keysDirectory))
 {
-    Directory.CreateDirectory(keysPath);
-    Console.WriteLine($"Directorio de claves creado: {keysPath}");
-
-    // Crear un archivo .gitkeep para que Railway no borre el directorio
-    File.WriteAllText(Path.Combine(keysPath, ".gitkeep"), "");
+    Directory.CreateDirectory(keysDirectory);
+    Console.WriteLine($"Directorio de claves creado: {keysDirectory}");
 }
 
-// IMPORTANTE: Eliminar claves viejas si existen problemas
+// Limpiar claves problemáticas si existen
 try
 {
-    var oldKeys = Directory.GetFiles(keysPath, "*.xml");
-    foreach (var oldKey in oldKeys)
+    var oldKeyFiles = Directory.GetFiles(keysDirectory, "*.xml");
+    if (oldKeyFiles.Length > 0)
     {
-        Console.WriteLine($"Eliminando clave vieja: {oldKey}");
-        File.Delete(oldKey);
+        Console.WriteLine($"Encontradas {oldKeyFiles.Length} claves viejas. Limpiando...");
+        foreach (var file in oldKeyFiles)
+        {
+            File.Delete(file);
+        }
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"Error limpiando claves viejas: {ex.Message}");
+    Console.WriteLine($"Error limpiando claves: {ex.Message}");
 }
 
-// MIDDLEWARE ORDER
+// Middleware order
 app.UseForwardedHeaders();
 
-// En producción, usar HTTPS
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
-    app.UseHttpsRedirection();
 }
 
 app.UseStaticFiles();
 app.UseRouting();
-
-// Session antes de Authentication
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Endpoint de debug (temporal) - opcional
-app.MapGet("/debug/keys", () =>
+// *** MIDDLEWARE DE EMERGENCIA PARA REGENERAR CLAVES ***
+app.Use(async (context, next) =>
 {
-    var keysPath = "/app/keys";
-    if (!Directory.Exists(keysPath))
-        return "No existe directorio de claves";
+    try
+    {
+        await next();
+    }
+    catch (CryptographicException ex) when (ex.Message.Contains("The payload was invalid"))
+    {
+        Console.WriteLine("ERROR CRÍTICO: Regenerando claves de Data Protection...");
 
-    var files = Directory.GetFiles(keysPath);
-    return $"Archivos en {keysPath}: {string.Join(", ", files)}";
+        // Eliminar todas las claves corruptas
+        var keysPath = "/app/data-protection-keys";
+        if (Directory.Exists(keysPath))
+        {
+            foreach (var file in Directory.GetFiles(keysPath))
+            {
+                File.Delete(file);
+            }
+        }
+
+        // Redirigir a la página de inicio
+        context.Response.Redirect("/Login/Index?error=session_expired");
+    }
 });
 
 app.MapControllerRoute(
