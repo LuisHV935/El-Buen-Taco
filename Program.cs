@@ -1,30 +1,15 @@
 ﻿using El_Buen_Taco.Data;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// *** 1. DATA PROTECTION EN MEMORIA (TEMPORAL) ***
-// Esto evita el problema de claves corruptas persistentes
+// *** DATA PROTECTION CON DURACIÓN MÍNIMA DE 1 SEMANA ***
 builder.Services.AddDataProtection()
     .SetApplicationName("El_Buen_Taco")
-    .SetDefaultKeyLifetime(TimeSpan.FromHours(4))
-    .DisableAutomaticKeyGeneration(); // Importante: no genera claves automáticamente
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(7)); // ¡MÍNIMO 7 DÍAS!
 
-// *** 2. CONFIGURAR ANTIFORGERY PARA IGNORAR TOKENS CORRUPTOS ***
-builder.Services.AddAntiforgery(options =>
-{
-    options.Cookie.Name = "ElBuenTaco.Csrf";
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Temporal
-    options.Cookie.SameSite = SameSiteMode.Lax;
-    options.HeaderName = "X-CSRF-TOKEN";
-    options.SuppressXFrameOptionsHeader = true;
-});
-
-// Services
+// Services básicos
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 
@@ -32,92 +17,55 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<PostgresConexion>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// *** 3. SESSION CON NOMBRE ÚNICO ***
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(60);
-    options.Cookie.Name = "ElBuenTaco.Session";
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-    options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Temporal para Render
-});
+// Session - SIN configuración compleja
+builder.Services.AddSession();
 
-// *** 4. AUTHENTICATION CON NOMBRE ÚNICO ***
+// Authentication - CONFIGURACIÓN MÍNIMA
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Login/Index";
         options.LogoutPath = "/Login/Index";
-        options.AccessDeniedPath = "/Login/Index";
-        options.ExpireTimeSpan = TimeSpan.FromHours(6);
+        options.ExpireTimeSpan = TimeSpan.FromHours(2);
         options.SlidingExpiration = true;
 
-        options.Cookie.Name = "ElBuenTaco.Auth";
+        // Solo lo esencial
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Temporal
-
-        // *** 5. MANEJAR ERRORES DE COOKIE CORRUPTA ***
-        options.Events = new CookieAuthenticationEvents
-        {
-            OnValidatePrincipal = async context =>
-            {
-                // Si la cookie es corrupta, forzar logout
-                try
-                {
-                    // Intenta acceder a claims
-                    var name = context.Principal?.Identity?.Name;
-                }
-                catch
-                {
-                    // Cookie corrupta - rechazar
-                    context.RejectPrincipal();
-                    await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                }
-            }
-        };
+        options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Temporal para desarrollo
     });
 
 var app = builder.Build();
 
-// *** 6. MIDDLEWARE PARA ELIMINAR COOKIES CORRUPTAS AL ENTRAR A LOGIN ***
+// *** MIDDLEWARE DE EMERGENCIA: Si hay error de antiforgery, limpiar cookies ***
 app.Use(async (context, next) =>
 {
-    // Cada vez que alguien visita login, limpiar posibles cookies corruptas
-    if (context.Request.Path.StartsWithSegments("/Login"))
+    try
     {
-        context.Response.OnStarting(() =>
-        {
-            // Eliminar TODAS las cookies posibles
-            var cookiesToDelete = new[]
-            {
-                "ElBuenTaco.Auth",
-                "ElBuenTaco.Session",
-                "ElBuenTaco.Csrf",
-                ".AspNetCore.Antiforgery",
-                ".AspNetCore.Cookies",
-                ".AspNetCore.Session"
-            };
-
-            foreach (var cookieName in cookiesToDelete)
-            {
-                context.Response.Cookies.Delete(cookieName);
-            }
-
-            return Task.CompletedTask;
-        });
+        await next();
     }
-
-    await next();
+    catch (Microsoft.AspNetCore.Antiforgery.AntiforgeryValidationException)
+    {
+        // Error de antiforgery - limpiar cookies y redirigir
+        context.Response.Cookies.Delete(".AspNetCore.Antiforgery");
+        context.Response.Cookies.Delete(".AspNetCore.Cookies");
+        context.Response.Redirect("/Login/Index?error=session_expired");
+    }
+    catch (System.Security.Cryptography.CryptographicException ex)
+        when (ex.Message.Contains("The payload was invalid"))
+    {
+        // Error de Data Protection - limpiar cookies
+        context.Response.Cookies.Delete(".AspNetCore.Cookies");
+        context.Response.Cookies.Delete(".AspNetCore.Session");
+        context.Response.Redirect("/Login/Index?error=security_reset");
+    }
 });
 
 // Middleware estándar
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
 }
 
 app.UseStaticFiles();
@@ -126,38 +74,15 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// *** 7. ENDPOINT DE EMERGENCIA ***
-app.MapGet("/emergency-reset", async (HttpContext context) =>
+// *** ENDPOINT SIMPLE PARA DIAGNÓSTICO ***
+app.MapGet("/status", () =>
 {
-    // Cerrar sesión
-    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-    // Eliminar todas las cookies
-    context.Response.Cookies.Delete("ElBuenTaco.Auth");
-    context.Response.Cookies.Delete("ElBuenTaco.Session");
-    context.Response.Cookies.Delete("ElBuenTaco.Csrf");
-
-    // Limpiar sesión
-    context.Session.Clear();
-
-    // Redirigir al login
-    context.Response.Redirect("/Login/Index?reset=success");
-    return Task.CompletedTask;
-});
-
-// *** 8. ENDPOINT PARA DEBUG ***
-app.MapGet("/debug-cookies", (HttpContext context) =>
-{
-    var result = new
+    return Results.Ok(new
     {
-        RequestCookies = context.Request.Cookies.Keys.ToList(),
-        SessionId = context.Session.Id,
-        IsAuthenticated = context.User.Identity?.IsAuthenticated ?? false,
-        UserName = context.User.Identity?.Name,
-        Time = DateTime.UtcNow
-    };
-
-    return Results.Json(result);
+        status = "running",
+        timestamp = DateTime.UtcNow,
+        data_protection = "configured"
+    });
 });
 
 app.MapControllerRoute(
