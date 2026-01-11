@@ -11,12 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("El Buen Taco")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("ElBuenTaco")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+33924d145f2b7d1e905e9a8441b90cedcbde2a36")]
-[assembly: System.Reflection.AssemblyProductAttribute("El Buen Taco")]
-[assembly: System.Reflection.AssemblyTitleAttribute("El Buen Taco")]
+[assembly: System.Reflection.AssemblyProductAttribute("ElBuenTaco")]
+[assembly: System.Reflection.AssemblyTitleAttribute("ElBuenTaco")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Generado por la clase WriteCodeFragment de MSBuild.

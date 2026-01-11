@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hUL6bao9k8g=",
+  "dgSpecHash": "aRJYQycD2l8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\El Buen Taco.csproj",
+  "projectFilePath": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\ElBuenTaco.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\gabal.LAPOEDEROSA\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\gabal.LAPOEDEROSA\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\10.0.1\\microsoft.aspnetcore.cryptography.internal.10.0.1.nupkg.sha512",

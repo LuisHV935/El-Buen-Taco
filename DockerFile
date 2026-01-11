@@ -3,12 +3,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copiar el archivo .csproj y restaurar dependencias
-COPY ["El Buen Taco.csproj", "./"]
-RUN dotnet restore "El Buen Taco.csproj"
+COPY *.csproj ./
+RUN dotnet restore
 
 # Copiar todo el código y compilar
 COPY . .
-RUN dotnet publish "El Buen Taco.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
 # Usar la imagen runtime más ligera para producción
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -24,5 +24,5 @@ EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Comando para iniciar la aplicación
-ENTRYPOINT ["dotnet", "El Buen Taco.dll"]
+# Comando para iniciar la aplicación (con nombre sin espacios)
+ENTRYPOINT ["dotnet", "ElBuenTaco.dll"]

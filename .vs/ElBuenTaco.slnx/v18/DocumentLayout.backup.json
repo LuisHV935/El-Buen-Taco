@@ -3,10 +3,6 @@
   "WorkspaceRootPath": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\el buen taco.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:el buen taco.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\controllers\\administrador.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{52332F63-F49C-4546-5360-9A5A13EDEC3F}|El Buen Taco.csproj|solutionrelative:controllers\\administrador.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -55,31 +51,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "El Buen Taco.csproj",
-              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\El Buen Taco.csproj",
-              "RelativeDocumentMoniker": "El Buen Taco.csproj",
-              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\El Buen Taco.csproj",
-              "RelativeToolTip": "El Buen Taco.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-01-11T03:59:58.914Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": "Administrador.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Controllers\\Administrador.cs",
               "RelativeDocumentMoniker": "Controllers\\Administrador.cs",
               "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Controllers\\Administrador.cs",
               "RelativeToolTip": "Controllers\\Administrador.cs",
-              "ViewState": "AgIAADIAAAAAAAAAAAAUwD4AAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADYAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-10T22:31:08.68Z"
+              "WhenOpened": "2026-01-10T22:31:08.68Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "Pedidos.cshtml",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Administrador\\Pedidos.cshtml",
               "RelativeDocumentMoniker": "Views\\Administrador\\Pedidos.cshtml",
@@ -91,7 +75,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "DataProtectionKeyEntity.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Data\\DataProtectionKeyEntity.cs",
               "RelativeDocumentMoniker": "Data\\DataProtectionKeyEntity.cs",
@@ -103,7 +87,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "Empleados.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Models\\Empleados.cs",
               "RelativeDocumentMoniker": "Models\\Empleados.cs",
@@ -115,7 +99,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 6,
               "Title": "Cocineros.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Models\\Cocineros.cs",
               "RelativeDocumentMoniker": "Models\\Cocineros.cs",
@@ -127,7 +111,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 7,
               "Title": "ScopedXmlRepositoryWrapper.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Data\\ScopedXmlRepositoryWrapper.cs",
               "RelativeDocumentMoniker": "Data\\ScopedXmlRepositoryWrapper.cs",
@@ -139,7 +123,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 8,
               "Title": "PostgresConexion.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Data\\PostgresConexion.cs",
               "RelativeDocumentMoniker": "Data\\PostgresConexion.cs",
@@ -151,7 +135,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "DataProtectionKeysContext.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Data\\DataProtectionKeysContext.cs",
               "RelativeDocumentMoniker": "Data\\DataProtectionKeysContext.cs",
@@ -163,7 +147,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",

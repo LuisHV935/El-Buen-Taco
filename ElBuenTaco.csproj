@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>El_Buen_Taco</RootNamespace>
+	  <AssemblyName>ElBuenTaco</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

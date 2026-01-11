@@ -3836,9 +3836,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\El Buen Taco.csproj",
-      "projectName": "El Buen Taco",
-      "projectPath": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\El Buen Taco.csproj",
+      "projectUniqueName": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\ElBuenTaco.csproj",
+      "projectName": "ElBuenTaco",
+      "projectPath": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\ElBuenTaco.csproj",
       "packagesPath": "C:\\Users\\gabal.LAPOEDEROSA\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\obj\\",
       "projectStyle": "PackageReference",
