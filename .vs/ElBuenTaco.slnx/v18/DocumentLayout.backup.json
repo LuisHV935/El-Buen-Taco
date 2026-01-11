@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{683A5A00-7A64-DC45-644E-81330C2142C1}|ElBuenTaco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{683A5A00-7A64-DC45-644E-81330C2142C1}|ElBuenTaco.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{683A5A00-7A64-DC45-644E-81330C2142C1}|ElBuenTaco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{683A5A00-7A64-DC45-644E-81330C2142C1}|ElBuenTaco.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{683A5A00-7A64-DC45-644E-81330C2142C1}|ElBuenTaco.csproj|c:\\users\\gabal.lapoederosa\\source\\repos\\el buen taco\\controllers\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{683A5A00-7A64-DC45-644E-81330C2142C1}|ElBuenTaco.csproj|solutionrelative:controllers\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -18,24 +26,50 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-01-11T06:10:40.539Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAK4AAAAAAAAAAAAAALQAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-11T06:09:09.03Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Login.cs",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Controllers\\Login.cs",
               "RelativeDocumentMoniker": "Controllers\\Login.cs",
               "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Controllers\\Login.cs",
               "RelativeToolTip": "Controllers\\Login.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAwBUAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAH0AAAAAAAAAAAAAABUAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-11T05:53:02.01Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
@@ -43,8 +77,7 @@
               "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
               "ViewState": "AgIAAF0AAAAAAAAAAAAAAHEAAABCAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-11T05:41:04.947Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-11T05:41:04.947Z"
             }
           ]
         }

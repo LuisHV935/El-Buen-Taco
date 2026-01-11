@@ -1,20 +1,16 @@
-﻿using System.IO;
-using System.Xml.Linq;
-using El_Buen_Taco.Data;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+﻿using El_Buen_Taco.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Logging
+// Logging detallado para debug
+builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,64 +19,81 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<PostgresConexion>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// DbContext para almacenar las claves de DataProtection
-builder.Services.AddDbContext<DataProtectionKeysContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Registrar la implementación EF concreta como scoped
-builder.Services.AddScoped<El_Buen_Taco.Data.EfCoreXmlRepository>();
-
-// Registrar el wrapper singleton
-builder.Services.AddSingleton<Microsoft.AspNetCore.DataProtection.Repositories.IXmlRepository, El_Buen_Taco.Data.ScopedXmlRepositoryWrapper>();
-
-// Configurar KeyManagementOptions
-builder.Services.AddSingleton<Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.DataProtection.KeyManagement.KeyManagementOptions>>(sp =>
-    new Microsoft.Extensions.Options.ConfigureOptions<Microsoft.AspNetCore.DataProtection.KeyManagement.KeyManagementOptions>(opts =>
-    {
-        opts.XmlRepository = sp.GetRequiredService<Microsoft.AspNetCore.DataProtection.Repositories.IXmlRepository>();
-    }));
-
-// Configurar DataProtection
+// CONFIGURACIÓN DATA PROTECTION SIMPLIFICADA PARA RAILWAY
+// SOLO usar FileSystem, eliminar la configuración EF Core
 builder.Services.AddDataProtection()
     .SetApplicationName("El_Buen_Taco")
-    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys")); // Persistir claves en Railway
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys")) // Railway usa /app como raíz
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(90))
+    .ProtectKeysWithDpapi(); // Solo para desarrollo local, en Railway no hace nada
 
-// Configurar Forwarded Headers para Railway (IMPORTANTE)
+// IMPORTANTE: Configurar Forwarded Headers para Railway
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto |
+        ForwardedHeaders.XForwardedHost;
+    // Necesario para Railway
+    options.ForwardLimit = 2;
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
+    // Permitir todos los proxies (Railway usa varios)
+    options.AllowedHosts = new List<string> { "*" };
 });
 
-// Session - CONFIGURACIÓN PARA RAILWAY
+// Session - CONFIGURACIÓN CORRECTA PARA RAILWAY
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.Name = "ElBuenTaco";
-    // Railway maneja HTTPS externamente, internamente es HTTP
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+    options.Cookie.Name = "ElBuenTaco.Session";
     options.Cookie.SameSite = SameSiteMode.Lax;
+    // IMPORTANTE: Railway maneja HTTPS, pero internamente es HTTP
+    // Usar CookieSecurePolicy.Always pero con configuración de proxy
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.MaxAge = TimeSpan.FromDays(14);
 });
 
-// Authentication - CONFIGURACIÓN PARA RAILWAY
+// Authentication - CONFIGURACIÓN CORRECTA PARA RAILWAY
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Login/Index";
-        options.LogoutPath = "/Login/Index";
-        options.AccessDeniedPath = "/Login/Index";
+        options.LogoutPath = "/Login/Logout";
+        options.AccessDeniedPath = "/Login/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromDays(14);
         options.SlidingExpiration = true;
 
+        // Configuración de cookies SEGURA
+        options.Cookie.Name = "ElBuenTaco.Auth";
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
-        options.Cookie.Name = "ElBuenTacoAuth";
         options.Cookie.SameSite = SameSiteMode.Lax;
-        // Railway maneja HTTPS externamente
-        options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // IMPORTANTE
+        options.Cookie.MaxAge = TimeSpan.FromDays(14);
+
+        // Manejar correctamente el logout
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnValidatePrincipal = context =>
+            {
+                // Log para debug
+                Console.WriteLine($"Validando principal para: {context.Principal?.Identity?.Name}");
+                return Task.CompletedTask;
+            },
+            OnRedirectToLogin = context =>
+            {
+                if (context.Request.Path.StartsWithSegments("/api"))
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                }
+                context.Response.Redirect(context.RedirectUri);
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddHttpContextAccessor();
@@ -92,42 +105,77 @@ var keysPath = "/app/keys";
 if (!Directory.Exists(keysPath))
 {
     Directory.CreateDirectory(keysPath);
+    Console.WriteLine($"Directorio de claves creado: {keysPath}");
 }
 
-// Asegurar que la tabla de claves existe
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        var keyDb = scope.ServiceProvider.GetRequiredService<DataProtectionKeysContext>();
-        keyDb.Database.EnsureCreated();
-    }
-    catch (Exception ex)
-    {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogWarning($"No se pudo crear tabla de claves: {ex.Message}");
-    }
-}
-
-// IMPORTANTE: UseForwardedHeaders debe ir ANTES de otros middlewares
+// MIDDLEWARE ORDER ES CRÍTICO:
+// 1. Forwarded Headers PRIMERO
 app.UseForwardedHeaders();
 
-// Configure the HTTP request pipeline.
+// 2. Middleware para forzar HTTPS en producción (Railway lo maneja)
+if (!app.Environment.IsDevelopment())
+{
+    app.Use(async (context, next) =>
+    {
+        // Verificar si ya es HTTPS o si el header X-Forwarded-Proto indica HTTPS
+        if (context.Request.Headers["X-Forwarded-Proto"] == "https" ||
+            context.Request.IsHttps)
+        {
+            await next();
+        }
+        else
+        {
+            // En producción, redirigir a HTTPS
+            var httpsUrl = $"https://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
+            context.Response.Redirect(httpsUrl, permanent: true);
+        }
+    });
+}
+
+// 3. Manejo de errores
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+else
+{
+    app.UseDeveloperExceptionPage();
 }
 
+// 4. Static files
 app.UseStaticFiles();
+
+// 5. Routing
 app.UseRouting();
 
-// Session debe estar antes de Authentication
+// 6. Session (DEBE ir antes de Authentication)
 app.UseSession();
+
+// 7. Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
+// 8. Endpoints
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");
+
+// Middleware de debug para ver cookies
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"=== DEBUG COOKIES ===");
+    Console.WriteLine($"Request Cookies: {context.Request.Cookies.Count}");
+    foreach (var cookie in context.Request.Cookies)
+    {
+        Console.WriteLine($"  {cookie.Key}: {cookie.Value}");
+    }
+    Console.WriteLine($"Session ID: {context.Session.Id}");
+    Console.WriteLine($"IsAuthenticated: {context.User.Identity?.IsAuthenticated}");
+    Console.WriteLine($"Scheme: {context.User.Identity?.AuthenticationType}");
+    Console.WriteLine($"=== END DEBUG ===");
+
+    await next();
+});
 
 app.Run();
