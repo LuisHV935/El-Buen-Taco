@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,69 +8,107 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/El_Buen_Taco.styles.css" asp-append-version="true" />
+
+    <style>
+        /* Footer pegado al pie: hacer que el root ocupe toda la altura y que el main crezca */
+        .site-root {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .site-main {
+            flex: 1 0 auto; /* ocupar el espacio disponible para empujar el footer al final */
+        }
+
+        footer.site-footer {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body class="@(ViewData["FullWidth"] ?? "")">
     @{
-        var IdUsuario = Context.Session.GetString("IdUsuario");
-        var Rol = Context.Session.GetString("UserRol");
+        var IdUsuario = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var Rol = User.FindFirst(ClaimTypes.Role)?.Value;
     }
-    @if(Rol == null)
-    {
-        
-    }
-    else
-    {
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    @switch (Rol)
-                    {
-                        case "CLIENTE":
-                            {
-                                <a class="navbar-brand" asp-area="" asp-controller="Cliente" asp-action="Index">Mis Pedidos</a>
-                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                                        aria-expanded="false" aria-label="Toggle navigation">
-                                    <span class="navbar-toggler-icon"></span>
-                                </button>
-                                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                                    <ul class="navbar-nav flex-grow-1">
-                                        <li class="nav-item">
-                                            <a class="nav-link text-dark" asp-area="" asp-controller="Cliente" asp-action="HacerPedido">Hacer pedido</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            }
-                            break;
-                        case "ADMIN":
-                            {
-                                <a class="navbar-brand" asp-area="" asp-controller="Administrador" asp-action="Index">Pedidos De Hoy</a>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                                aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                            <ul class="navbar-nav flex-grow-1">
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Administrador" asp-action="Clientes">Clientes</a>
-                                </li>
-                                <li class="nav-link text-black">
-                                            <a class="nav-link text-black" asp-area="" asp-controller="Administrador" asp-action="Pedidos">Pedidos Globales</a>
-                                </li>
-                            </ul>
-                        </div>
-                              
-                            }
-                            break;
-                    }
+
+    <div class="site-root">
+        @if(Rol == null)
+        {
+            
+        }
+        else
+        {
+            <header>
+                <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                    <div class="container-fluid">
+                        @switch (Rol)
+                        {
+                            case "CLIENTE":
+                                {
+                                    <a class="navbar-brand" asp-area="" asp-controller="Cliente" asp-action="Index">Mis Pedidos</a>
+                                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                                            aria-expanded="false" aria-label="Toggle navigation">
+                                        <span class="navbar-toggler-icon"></span>
+                                    </button>
+                                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                                        <ul class="navbar-nav flex-grow-1">
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" asp-area="" asp-controller="Cliente" asp-action="HacerPedido">Hacer pedido</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                }
+                                break;
+                            case "ADMIN":
+                                {
+                                    <a class="navbar-brand" asp-area="" asp-controller="Administrador" asp-action="Index">Pedidos De Hoy</a>
+                                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                                            aria-expanded="false" aria-label="Toggle navigation">
+                                        <span class="navbar-toggler-icon"></span>
+                                    </button>
+                                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                                        <ul class="navbar-nav flex-grow-1">
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" asp-area="" asp-controller="Administrador" asp-action="Clientes">Clientes</a>
+                                            </li>
+                                            <li class="nav-link text-black">
+                                                <a class="nav-link text-black" asp-area="" asp-controller="Administrador" asp-action="Pedidos">Pedidos Globales</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                }
+                                break;
+                        }
+                    </div>
+                </nav>
+            </header>
+        }
+
+        <div class="container site-main">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        @* Footer: muestra info de usuario y botón para cerrar sesión (borra storage del cliente y llama al endpoint de logout) *@
+        @if (User?.Identity?.IsAuthenticated == true)
+        {
+            <footer class="border-top mt-4 py-3 bg-light site-footer">
+                <div class="container d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Conectado como @User.FindFirst(ClaimTypes.Email)?.Value</small>
+                    </div>
+                    <div>
+                        <form asp-controller="Login" asp-action="Index" method="get" onsubmit="sessionStorage.clear(); localStorage.clear();">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
+                        </form>
+                    </div>
                 </div>
-            </nav>
-        </header>
-    }
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            </footer>
+        }
     </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

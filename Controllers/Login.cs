@@ -1,4 +1,6 @@
-﻿
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using El_Buen_Taco.Models;
@@ -15,42 +17,64 @@ namespace El_Buen_Taco.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            HttpContext.Session.Clear();
+            // Reemplaza el borrado de sesión por SignOut (elimina cookie de autenticación)
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Index(Usuario user)
         {
-            try{
-            user.password = EncriptarContraseña.ComputeSHA256(user.password);
-            var Usuario1 = await _context.usuarios.FirstOrDefaultAsync(u => u.password == user.password && u.email == user.email);
-            UsuariodeSesion usuariodeSesion = new UsuariodeSesion();
-            if (Usuario1 != null){
-                usuariodeSesion.Id = Usuario1.id;
-                usuariodeSesion.Tipo = Usuario1.rol;
-                usuariodeSesion.email = Usuario1.email;
-                HttpContext.Session.SetInt32("UserId", usuariodeSesion.Id);
-                HttpContext.Session.SetString("UserEmail", usuariodeSesion.email);
-                HttpContext.Session.SetString("UserRol", usuariodeSesion.Tipo);
-            }else{
-                ViewData["Mensaje"] = "❌Credenciales Invalidas";
-                return View();
-            }
-
-            switch (usuariodeSesion.Tipo)
+            try
             {
-                case "ADMIN":
-                    return RedirectToAction("Index", "Administrador");
-                case "CLIENTE":
-                    int IdCliente = _context.clientes.Where(c => c.id_user == usuariodeSesion.Id).Select(c => c.Id_cliente).FirstOrDefault();
-                    HttpContext.Session.SetInt32("ClienteId", IdCliente);
-                    return RedirectToAction("Index", "Cliente");
-            }
-                return View();
+                user.password = EncriptarContraseña.ComputeSHA256(user.password);
+                var Usuario1 = await _context.usuarios.FirstOrDefaultAsync(u => u.password == user.password && u.email == user.email);
+                if (Usuario1 == null)
+                {
+                    ViewData["Mensaje"] = "❌Credenciales Invalidas";
+                    return View();
+                }
+
+                // Construir claims para el usuario autenticado
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, Usuario1.id.ToString()),
+                    new Claim(ClaimTypes.Email, Usuario1.email ?? string.Empty),
+                    new Claim(ClaimTypes.Name, Usuario1.email ?? string.Empty),
+                    new Claim(ClaimTypes.Role, Usuario1.rol ?? string.Empty)
+                };
+
+                // Si es cliente, obtener el IdCliente y añadirlo como claim
+                if (Usuario1.rol == "CLIENTE")
+                {
+                    var IdCliente = await _context.clientes
+                        .Where(c => c.id_user == Usuario1.id)
+                        .Select(c => c.Id_cliente)
+                        .FirstOrDefaultAsync();
+
+                    claims.Add(new Claim("ClienteId", IdCliente.ToString()));
+                }
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                // Iniciar sesión con cookie de autenticación
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                // Redirección según rol
+                switch (Usuario1.rol)
+                {
+                    case "ADMIN":
+                        return RedirectToAction("Index", "Administrador");
+                    case "CLIENTE":
+                        return RedirectToAction("Index", "Cliente");
+                    default:
+                        return View();
+                }
             }
             catch (Exception ex)
             {
@@ -58,17 +82,19 @@ namespace El_Buen_Taco.Controllers
                 return View();
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> Registro()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Registro(Registro user)
         {
             try
             {
-                bool usuarioRegistrado = _context.usuarios.Any(u => u.email == user.usuario.email);
+                bool usuarioRegistrado = await _context.usuarios.AnyAsync(u => u.email == user.usuario.email);
                 if (usuarioRegistrado)
                 {
                     ViewData["Mensaje"] = "Email ligado a un usuario ya registrado, intente con otro";
@@ -79,14 +105,15 @@ namespace El_Buen_Taco.Controllers
                     user.usuario.rol = "CLIENTE";
                     user.usuario.password = EncriptarContraseña.ComputeSHA256(user.usuario.password);
                     _context.usuarios.Add(user.usuario);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
+
                     user.cliente.id_user = user.usuario.id;
                     _context.clientes.Add(user.cliente);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
+
                     ViewData["Confirmacion"] = "Felicidades!!! Ya formas parte de esta gran familia 😊 \nRegresa al inicio para poder acceder a tu cuenta";
                 }
                 return View();
-
             }
             catch (Exception ex)
             {

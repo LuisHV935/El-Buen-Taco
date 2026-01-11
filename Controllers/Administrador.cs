@@ -1,9 +1,9 @@
-﻿using El_Buen_Taco.Data;
+﻿using System.Security.Claims;
+using El_Buen_Taco.Data;
 using El_Buen_Taco.Models;
-using Microsoft.AspNetCore.Http;
-using El_Buen_Taco.Filtros;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using El_Buen_Taco.Filtros;
 using System.Numerics;
 
 namespace El_Buen_Taco.Controllers
@@ -15,9 +15,20 @@ namespace El_Buen_Taco.Controllers
         {
             _context = context;
         }
+
+        private bool IsAdminAuthenticated()
+        {
+            return User?.Identity?.IsAuthenticated == true && User.IsInRole("ADMIN");
+        }
+
         [BlockDirectAccess]
         public async Task<IActionResult> Index()
         {
+            if (!IsAdminAuthenticated())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             DateTime hoy = DateTime.Today;
 
             var pedidos = _context.pedidos
@@ -32,34 +43,59 @@ namespace El_Buen_Taco.Controllers
         [BlockDirectAccess]
         public async Task<IActionResult> Pedidos()
         {
+            if (!IsAdminAuthenticated())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             var pedidos = await _context.pedidos.ToListAsync();
             pedidos.ForEach(p => p.Fecha_pedido = p.Fecha_pedido.Date);
             return View(pedidos);
-        }   
+        }
 
         [BlockDirectAccess]
-        public async Task<IActionResult> Clientes() { 
+        public async Task<IActionResult> Clientes()
+        {
+            if (!IsAdminAuthenticated())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             var clientes = await _context.clientes.ToListAsync();
-            return View(clientes);  
+            return View(clientes);
         }
 
         [BlockDirectAccess]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var cliente = _context.clientes.Find(id);   
-            _context.clientes.Remove(cliente);   
-            _context.SaveChanges();
-            return View("Clientes");
+            if (!IsAdminAuthenticated())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var cliente = await _context.clientes.FindAsync(id);
+            if (cliente != null)
+            {
+                _context.clientes.Remove(cliente);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Clientes");
         }
 
         [BlockDirectAccess]
-        public IActionResult DeletePedido(int id, string action)
+        public async Task<IActionResult> DeletePedido(int id, string action)
         {
-            var pedidoAEliminar = _context.pedidos.Find(id);
-            if(pedidoAEliminar != null)
+            if (!IsAdminAuthenticated())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var pedidoAEliminar = await _context.pedidos.FindAsync(id);
+            if (pedidoAEliminar != null)
             {
                 _context.pedidos.Remove(pedidoAEliminar);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             return RedirectToAction(action);
         }
@@ -67,11 +103,21 @@ namespace El_Buen_Taco.Controllers
         [BlockDirectAccess]
         public async Task<IActionResult> DetallesPedido(int id)
         {
+            if (!IsAdminAuthenticated())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             var pedido = await _context.pedidos.FindAsync(id);
+            if (pedido == null)
+            {
+                return NotFound();
+            }
+
             int idCliente = (int)pedido.Idcliente;
-            var clie = _context.clientes.Find(pedido.Idcliente);
-            ViewData["ClienteName"] = clie.Name;
-            ViewData["ClientePhone"] = clie.tel.ToString();
+            var clie = await _context.clientes.FindAsync(pedido.Idcliente);
+            ViewData["ClienteName"] = clie?.Name;
+            ViewData["ClientePhone"] = clie?.tel.ToString();
             ViewData["ClienteId"] = idCliente;
             return View(pedido);
         }

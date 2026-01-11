@@ -151,3 +151,4 @@ C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\refint\ElB
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\ElBuenTaco.pdb
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\ElBuenTaco.genruntimeconfig.cache
 C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\ref\ElBuenTaco.dll
+C:\Users\gabal.LAPOEDEROSA\source\repos\El Buen Taco\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
