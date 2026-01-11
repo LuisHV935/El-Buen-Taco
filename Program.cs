@@ -1,51 +1,34 @@
 ﻿using El_Buen_Taco.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+// *** CONFIGURACIÓN DATA PROTECTION PARA RENDER ***
+// Render tiene almacenamiento persistente en /var/data
+var dataProtectionPath = Path.Combine(
+    Environment.GetEnvironmentVariable("RENDER_DATA_PATH") ?? "/var/data",
+    "data-protection-keys");
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-// DbContext principal
-builder.Services.AddDbContext<PostgresConexion>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// *** DATA PROTECTION SIMPLIFICADO - SIN UseCryptographicAlgorithms ***
-var keysDirectory = "/tmp/data-protection-keys"; // /tmp es persistente en Railway
 builder.Services.AddDataProtection()
     .SetApplicationName("El_Buen_Taco")
-    .PersistKeysToFileSystem(new DirectoryInfo(keysDirectory))
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionPath))
     .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
 
-// Configurar Antiforgery
-builder.Services.AddAntiforgery(options =>
-{
-    options.Cookie.Name = "ElBuenTaco.Antiforgery";
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Lax;
-});
+// Services
+builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 
-// Configurar Forwarded Headers
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
-{
-    options.ForwardedHeaders = ForwardedHeaders.All;
-    options.KnownNetworks.Clear();
-    options.KnownProxies.Clear();
-});
+// Database
+builder.Services.AddDbContext<PostgresConexion>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Session
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.Name = "ElBuenTaco.Session";
+    options.Cookie.Name = ".ElBuenTaco.Session";
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
@@ -57,33 +40,38 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Login/Index";
-        options.ExpireTimeSpan = TimeSpan.FromDays(14);
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
         options.SlidingExpiration = true;
 
-        options.Cookie.Name = "ElBuenTaco.Auth";
+        options.Cookie.Name = ".ElBuenTaco.Auth";
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
-builder.Services.AddHttpContextAccessor();
-
 var app = builder.Build();
 
-// Crear directorio para claves
-if (!Directory.Exists(keysDirectory))
+// Crear directorio de claves
+if (!Directory.Exists(dataProtectionPath))
 {
-    Directory.CreateDirectory(keysDirectory);
-    Console.WriteLine($"Directorio de claves creado: {keysDirectory}");
+    Directory.CreateDirectory(dataProtectionPath);
+    Console.WriteLine($"✓ Directorio de claves creado: {dataProtectionPath}");
 }
 
-// Middleware order
-app.UseForwardedHeaders();
+// Verificar claves existentes
+var existingKeys = Directory.GetFiles(dataProtectionPath, "*.xml");
+Console.WriteLine($"✓ Claves existentes: {existingKeys.Length}");
 
-if (!app.Environment.IsDevelopment())
+// *** SI HAY CLAVES, ELIMINARLAS PARA FORZAR NUEVAS ***
+if (existingKeys.Length > 0)
 {
-    app.UseHsts();
+    Console.WriteLine("⚠️ Eliminando claves viejas...");
+    foreach (var keyFile in existingKeys)
+    {
+        File.Delete(keyFile);
+    }
+    Console.WriteLine("✓ Claves viejas eliminadas. Se crearán nuevas.");
 }
 
 app.UseStaticFiles();
@@ -91,6 +79,38 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// *** ENDPOINT DE EMERGENCIA PARA RENDER ***
+app.MapGet("/reset-cookies", async (HttpContext context) =>
+{
+    // Eliminar cookies problemáticas
+    context.Response.Cookies.Delete(".ElBuenTaco.Auth");
+    context.Response.Cookies.Delete(".ElBuenTaco.Session");
+
+    // Redirigir al login
+    context.Response.Redirect("/Login/Index");
+    return Task.CompletedTask;
+});
+
+// *** ENDPOINT PARA VER ESTADO ***
+app.MapGet("/render-debug", () =>
+{
+    var dataPath = Environment.GetEnvironmentVariable("RENDER_DATA_PATH") ?? "/var/data";
+    var keysPath = Path.Combine(dataPath, "data-protection-keys");
+
+    var keysExist = Directory.Exists(keysPath);
+    var keyCount = keysExist ? Directory.GetFiles(keysPath, "*.xml").Length : 0;
+
+    return Results.Ok(new
+    {
+        environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+        dataPath = dataPath,
+        keysPath = keysPath,
+        keysExist = keysExist,
+        keyCount = keyCount,
+        timestamp = DateTime.UtcNow
+    });
+});
 
 app.MapControllerRoute(
     name: "default",
