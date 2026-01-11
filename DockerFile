@@ -1,20 +1,28 @@
+# Usar la imagen oficial de .NET 8 SDK para build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiamos s�lo el csproj primero para aprovechar cache de Docker
+# Copiar el archivo .csproj y restaurar dependencias
 COPY ["El Buen Taco.csproj", "./"]
 RUN dotnet restore "El Buen Taco.csproj"
 
-# Copiamos el resto y publicamos
+# Copiar todo el código y compilar
 COPY . .
 RUN dotnet publish "El Buen Taco.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+# Usar la imagen runtime más ligera para producción
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
+# Copiar los archivos publicados desde el stage de build
 COPY --from=build /app/publish .
 
-# Exponer un puerto informativo (no obligatorio)
-EXPOSE 80
+# Exponer el puerto (Railway usa PORT dinámico)
+EXPOSE 8080
 
-# Al arrancar, asignamos ASPNETCORE_URLS usando $PORT (si no est�, usa 80)
-ENTRYPOINT ["sh", "-c", "export ASPNETCORE_URLS=http://*:${PORT:-80} && exec dotnet \"El Buen Taco.dll\""]
+# Variables de entorno
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Comando para iniciar la aplicación
+ENTRYPOINT ["dotnet", "El Buen Taco.dll"]

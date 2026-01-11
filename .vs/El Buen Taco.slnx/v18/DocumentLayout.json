@@ -55,12 +55,12 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "El Buen Taco",
+              "Title": "El Buen Taco.csproj",
               "DocumentMoniker": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\El Buen Taco.csproj",
               "RelativeDocumentMoniker": "El Buen Taco.csproj",
               "ToolTip": "C:\\Users\\gabal.LAPOEDEROSA\\source\\repos\\El Buen Taco\\El Buen Taco.csproj",
               "RelativeToolTip": "El Buen Taco.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAaAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2026-01-11T03:59:58.914Z",
               "EditorCaption": ""
@@ -75,8 +75,7 @@
               "RelativeToolTip": "Controllers\\Administrador.cs",
               "ViewState": "AgIAADIAAAAAAAAAAAAUwD4AAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-10T22:31:08.68Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-10T22:31:08.68Z"
             },
             {
               "$type": "Document",
