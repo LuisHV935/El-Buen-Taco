@@ -21,8 +21,8 @@ COPY --from=build /app/publish .
 EXPOSE 8080
 
 # Variables de entorno
-ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Comando para iniciar la aplicación (con nombre sin espacios)
-ENTRYPOINT ["dotnet", "ElBuenTaco.dll"]
+# Comando para iniciar la aplicación
+# Railway proporciona la variable PORT dinámicamente
+ENTRYPOINT ["sh", "-c", "dotnet *.dll --urls http://0.0.0.0:${PORT}"]
