@@ -21,8 +21,8 @@ namespace El_Buen_Taco.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // *** CAMBIO 1: NO hacer SignOutAsync aquí ***
-            // Solo retornar la vista
+            HttpContext.SignOutAsync();
+            HttpContext.Session.Clear(); 
             return View();
         }
 
@@ -32,7 +32,7 @@ namespace El_Buen_Taco.Controllers
             try
             {
                 user.password = EncriptarContraseña.ComputeSHA256(user.password);
-                var Usuario1 = await _context.usuarios.FirstOrDefaultAsync(u => u.password == user.password && u.email == user.email);
+                var Usuario1 = _context.usuarios.FirstOrDefault(u => u.password == user.password && u.email == user.email);
 
                 if (Usuario1 == null)
                 {
